@@ -1,1 +1,7 @@
 ---
+#
+# Solve common issues
+#
+
+- name: Unblock bluetooth
+  shell: "rfkill unblock bluetooth"
