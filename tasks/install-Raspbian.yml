@@ -8,3 +8,6 @@
 
 - name: Restart bluetooth service
   service: name=bluetooth state=restarted
+
+- name: Append -E flag to bluetooth service
+  lineinfile: dest=/lib/systemd/system/bluetooth.service regexp="ExecStart=" line="ExecStart=/usr/lib/bluetooth/bluetoothd -E"
