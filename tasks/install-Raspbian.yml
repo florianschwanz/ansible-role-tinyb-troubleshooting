@@ -21,3 +21,12 @@
       <allow send_interface="org.bluez.GattService1"/>
       <allow send_interface="org.bluez.GattCharacteristic1"/>
       <allow send_interface="org.bluez.GattDescriptor1"/>
+
+- name: Check kernel bluetooth support
+  shell: lsmod | grep bluetooth | wc -l
+  register: kernel_bluetooth_support
+
+- name: Assert kernel bluetooth support
+  assert:
+    that:
+      - "kernel_bluetooth_support > 0"
