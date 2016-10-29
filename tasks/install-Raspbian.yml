@@ -5,3 +5,6 @@
 
 - name: Unblock bluetooth
   shell: "rfkill unblock bluetooth"
+
+- name: Restart bluetooth service
+  service: name=bluetooth state=restarted
