@@ -11,3 +11,13 @@
 
 - name: Append -E flag to bluetooth service
   lineinfile: dest=/lib/systemd/system/bluetooth.service regexp="ExecStart=" line="ExecStart=/usr/lib/bluetooth/bluetoothd -E"
+
+- name: Permit users access to BlueZ GATT interfaces in DBus policy
+  blockinfile:
+    dest: /etc/dbus-1/system.d/bluetooth.conf
+    insertafter: "<policy context=\"default\">"
+    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    content: |
+      <allow send_interface="org.bluez.GattService1"/>
+      <allow send_interface="org.bluez.GattCharacteristic1"/>
+      <allow send_interface="org.bluez.GattDescriptor1"/>
