@@ -10,6 +10,9 @@
 - name: Unblock bluetooth
   shell: "rfkill unblock bluetooth"
 
+- name: Unmask bluetooth service
+  shell: "systemctl unmask bluetooth.service"
+
 - name: Restart bluetooth service
   service: name=bluetooth state=restarted
 
