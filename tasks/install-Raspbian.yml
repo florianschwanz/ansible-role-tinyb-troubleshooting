@@ -1,5 +1,9 @@
 ---
 #
+# Note: this role follows instructions listed here: https://github.com/intel-iot-devkit/tinyb/blob/master/TROUBLESHOOTING.md
+#
+
+#
 # Check bluetooth service
 #
 
