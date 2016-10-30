@@ -1,6 +1,6 @@
 ---
 #
-# Solve common issues
+# Check bluetooth service
 #
 
 - name: Unblock bluetooth
@@ -12,6 +12,10 @@
 - name: Append -E flag to bluetooth service
   lineinfile: dest=/lib/systemd/system/bluetooth.service regexp="ExecStart=" line="ExecStart=/usr/lib/bluetooth/bluetoothd -E"
 
+#
+# Check DBus policy
+#
+
 - name: Permit users access to BlueZ GATT interfaces in DBus policy
   blockinfile:
     dest: /etc/dbus-1/system.d/bluetooth.conf
@@ -22,6 +26,10 @@
       <allow send_interface="org.bluez.GattCharacteristic1"/>
       <allow send_interface="org.bluez.GattDescriptor1"/>
 
+#
+# Check kernel settings
+#
+
 - name: Check kernel bluetooth support
   shell: lsmod | grep bluetooth | wc -l
   register: kernel_bluetooth_support
@@ -30,3 +38,45 @@
   assert:
     that:
       - "kernel_bluetooth_support > 0"
+
+- stat: path=/proc/config
+  register: proc_config
+
+- stat: path=/proc/config.gz
+  register: proc_config_gz
+
+- stat: path=/boot/config.txt
+  register: boot_config_txt
+
+- name: Assert kernel bluetooth support
+  assert:
+    that:
+      - "proc_config.stat.exists or proc_config_gz.stat.exists or boot_config_txt.stat.exists"
+
+- lineinfile: dest=/boot/config.txt regexp="CONFIG_BT=" line="CONFIG_BT=m"
+  when: boot_config_txt.stat.exists
+
+- lineinfile: dest=/boot/config.txt regexp="CONFIG_BT_LE=" line="CONFIG_BT_LE=y"
+  when: boot_config_txt.stat.exists
+
+- name: Load bluetooth module
+  shell: "modprobe bluetooth"
+
+- name: Check rfkill list bluetooth
+  shell: "rfkill list bluetooth | grep Bluetooth | wc -l"
+  register: rfkill_list_bluetooth_bluetooth
+
+- name: Check rfkill list bluetooth soft blocked no
+  shell: "rfkill list bluetooth | grep \"Soft blocked: no\" | wc -l"
+  register: rfkill_list_bluetooth_soft_blocked_no
+
+- name: Check rfkill list bluetooth hard blocked no
+  shell: "rfkill list bluetooth | grep \"Hard blocked: no\" | wc -l"
+  register: rfkill_list_bluetooth_hard_blocked_no
+
+- name: Assert rfkill list
+  assert:
+    that:
+      - rfkill_list_bluetooth_bluetooth > 1
+      - rfkill_list_bluetooth_soft_blocked_no > 1
+      - rfkill_list_bluetooth_hard_blocked_no > 1
