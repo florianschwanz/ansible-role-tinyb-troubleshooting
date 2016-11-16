@@ -7,6 +7,9 @@
 # Check bluetooth service
 #
 
+- name: Install rfkill
+  package: name=rfkill state=present
+
 - name: Unblock bluetooth
   shell: "rfkill unblock bluetooth"
 
@@ -17,7 +20,7 @@
   service: name=bluetooth state=restarted
 
 - name: Append -E flag to bluetooth service
-  lineinfile: dest=/lib/systemd/system/bluetooth.service regexp="ExecStart=" line="ExecStart=/usr/lib/bluetooth/bluetoothd -E"
+  lineinfile: dest=/lib/systemd/system/bluetooth.service regexp="ExecStart=" line="ExecStart=/usr/libexec/bluetooth/bluetoothd -E"
 
 #
 # Check DBus policy
