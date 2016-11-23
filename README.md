@@ -18,7 +18,7 @@ None.
 
     - hosts: all
       roles:
-        - { role: interoberlin.ansible-role-tinyb-troubleshooting }
+        - { role: interoberlin.tinyb-troubleshooting }
 
 ## License
 
